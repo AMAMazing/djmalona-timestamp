@@ -29,9 +29,9 @@ def update_image():
             return
 
         # Rotate the cropped image
-        if rotation.get() == -90:
+        if rotation.get() == 90:
             rotated_img = cv2.rotate(cropped_img, cv2.ROTATE_90_COUNTERCLOCKWISE)
-        elif rotation.get() == 90:
+        elif rotation.get() == -90:
             rotated_img = cv2.rotate(cropped_img, cv2.ROTATE_90_CLOCKWISE)
         else:
             rotated_img = cropped_img
