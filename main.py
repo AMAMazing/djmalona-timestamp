@@ -1,5 +1,5 @@
-from PIL import Image, ImageEnhance, ImageOps
 import pytesseract
+from PIL import Image, ImageEnhance, ImageOps
 import matplotlib.pyplot as plt
 
 # Define function to preprocess, crop, rotate, and extract text
@@ -32,9 +32,16 @@ def process_image(image_path, left, right, top, bottom, rotation, display=False)
 
 image_path = 'image.png'
 
+displayrest = True
+
 # Enable display to verify each crop and rotation visually
-oneheader = process_image(image_path, left=0, right=30, top=0, bottom=607, rotation=-90, display=False)
-twoheader = process_image(image_path, left=1155, right=1188, top=59, bottom=665, rotation=90, display=False)
+oneheader = process_image(image_path, left=0, right=30, top=0, bottom=607, rotation=-90, display=displayrest)
+onesub = process_image(image_path, left=25, right=48, top=466, bottom=606, rotation=-90, display=displayrest)
+twoheader = process_image(image_path, left=1155, right=1188, top=59, bottom=665, rotation=90, display=displayrest)
+twosub = process_image(image_path, left=1132, right=1159, top=60, bottom=200, rotation=90, display=displayrest)
 
 print("One header Text:", oneheader)
+print("One sub Text:", onesub)
 print("Two header Text:", twoheader)
+print("Two sub Text:", twosub)
+
