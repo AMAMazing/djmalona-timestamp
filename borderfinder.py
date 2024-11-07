@@ -6,7 +6,7 @@ root = Tk()
 root.title("Image Cropper Controls")
 
 # Load the image
-image_path = 'image.png'
+image_path = 'image.png'    
 img = cv2.imread(image_path)
 img_height, img_width = img.shape[:2]
 
