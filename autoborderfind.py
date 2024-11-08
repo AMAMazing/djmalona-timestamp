@@ -1,47 +1,43 @@
-import cv2
-import numpy as np
 from PIL import Image
-import matplotlib.pyplot as plt
 
-def auto_crop_image(image_path, border_color=(30, 30, 30), tolerance=10000, display=False):
+def main():
     # Load the image
-    img = cv2.imread(image_path)
-    
-    # Convert to grayscale and apply a threshold to highlight the border
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    _, thresh = cv2.threshold(gray, 1, 255, cv2.THRESH_BINARY)
-    
-    # Find contours in the thresholded image
-    contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    
-    # Identify the largest contour, assuming it represents the main content area
-    main_contour = max(contours, key=cv2.contourArea)
-    
-    # Get bounding box coordinates around the main content
-    x, y, w, h = cv2.boundingRect(main_contour)
-    
-    # Crop the image using the bounding box
-    cropped_img = img[y:y+h, x:x+w]
-    
-    # Display the cropped image if needed
-    if display:
-        plt.imshow(cv2.cvtColor(cropped_img, cv2.COLOR_BGR2RGB))
-        plt.title("Cropped Image")
-        plt.axis('off')
-        plt.show()
-    
-    return cropped_img, (x, y, w, h)
+    image = Image.open('image.png')
+    pixels = image.load()
+    width, height = image.size
+    grey = (30, 30, 30)
 
-def save_cropped_image(cropped_img, output_path='cropped_image.png'):
-    # Save the cropped image
-    cv2.imwrite(output_path, cropped_img)
-    print(f"Cropped image saved to {output_path}")
+    # Lists to hold the x and y coordinates of grey pixels
+    x_coords = []
+    y_coords = []
 
-# Define the path to your input image
-image_path = 'image.png'
+    # Iterate over each pixel in the image
+    for y in range(height):
+        for x in range(width):
+            pixel = pixels[x, y]
+            # Handle images with RGBA channels
+            if len(pixel) >= 3:
+                rgb = pixel[:3]
+            else:
+                rgb = pixel
+            # Check if the pixel matches the specific grey color
+            if rgb == grey:
+                x_coords.append(x)
+                y_coords.append(y)
 
-# Auto-crop the image to remove the border
-cropped_img, coordinates = auto_crop_image(image_path, display=True)
+    # If grey pixels are found, proceed to crop
+    if x_coords and y_coords:
+        left = min(x_coords)
+        right = max(x_coords)
+        top = min(y_coords)
+        bottom = max(y_coords)
 
-# Save the cropped image
-save_cropped_image(cropped_img)
+        # Crop the image to the bounding box of grey pixels
+        cropped_image = image.crop((left, top, right + 1, bottom + 1))
+        cropped_image.save('cropped_image.png')
+        print('Cropped image saved as cropped_image.png')
+    else:
+        print('No grey pixels found in the image.')
+
+if __name__ == '__main__':
+    main()
