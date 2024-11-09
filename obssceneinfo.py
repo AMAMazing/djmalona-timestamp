@@ -1,6 +1,7 @@
 import os
 from obswebsocket import obsws, requests, exceptions
 from dotenv import load_dotenv
+from difflib import get_close_matches
 
 # Load environment variables from .env file
 load_dotenv()
@@ -17,44 +18,53 @@ try:
     ws.connect()
     print("Connected to OBS WebSocket")
 
-    # Get all scenes and print the structure to understand it
+    # Get all scenes
     scenes_response = ws.call(requests.GetSceneList())
     scenes = scenes_response.getScenes()
 
-    print("Scene list structure:")
-    for scene in scenes:
-        print(scene)  # Print each scene's structure
+    # Build a list of scene names
+    scene_names = [scene['sceneName'] for scene in scenes]
+    print("Available scenes:")
+    for name in scene_names:
+        print(f" - {name}")
 
-    # Uncomment the following lines if you see the correct structure and want to proceed
-    '''
-    # Find the "DJing" scene
-    scene_name = "DJing"
-    scene_found = False
-    for scene in scenes:
-        if scene["name"] == scene_name:
-            scene_found = True
-            print(f"Found scene '{scene_name}'")
+    # Input scene name
+    input_scene_name = "DJing (1080 no scaling)"
 
-            # Get each source item in this scene
-            for item in scene["sources"]:
-                source_name = item["name"]
-                scene_item_id = item["id"]
+    # Find the closest match to the input scene name
+    closest_matches = get_close_matches(input_scene_name, scene_names, n=1, cutoff=0.0)
 
-                # Fetch the transform properties for each source
-                transform_response = ws.call(requests.GetSceneItemProperties(item["name"]))
-                transform = transform_response.datain
+    if closest_matches:
+        matched_scene_name = closest_matches[0]
+        print(f"Using scene '{matched_scene_name}' as the closest match to '{input_scene_name}'")
+    else:
+        print(f"No close match found for scene '{input_scene_name}'")
+        ws.disconnect()
+        exit()
 
-                print(f"\nSource Name: {source_name}")
-                print(f"Scene Item ID: {scene_item_id}")
-                print("Transform Properties:")
-                print(f" - Position (X, Y): ({transform['position']['x']}, {transform['position']['y']})")
-                print(f" - Rotation: {transform['rotation']}")
-                print(f" - Scale (X, Y): ({transform['scale']['x']}, {transform['scale']['y']})")
-                print(f" - Crop (Left, Right, Top, Bottom): ({transform['crop']['left']}, {transform['crop']['right']}, {transform['crop']['top']}, {transform['crop']['bottom']})")
+    # Get the scene items (sources) in the matched scene
+    scene_items_response = ws.call(requests.GetSceneItemList(sceneName=matched_scene_name))
+    scene_items = scene_items_response.getSceneItems()
 
-    if not scene_found:
-        print(f"Scene '{scene_name}' not found.")
-    '''
+    # For each scene item, get the transform properties
+    for item in scene_items:
+        source_name = item['sourceName']
+        scene_item_id = item['sceneItemId']
+
+        # Get the transform properties
+        transform_response = ws.call(requests.GetSceneItemTransform(
+            sceneName=matched_scene_name,
+            sceneItemId=scene_item_id
+        ))
+        transform = transform_response.datain['sceneItemTransform']  # Adjusted line
+
+        print(f"\nSource Name: {source_name}")
+        print(f"Scene Item ID: {scene_item_id}")
+        print("Transform Properties:")
+        print(f" - Position (X, Y): ({transform['positionX']}, {transform['positionY']})")
+        print(f" - Rotation: {transform['rotation']}")
+        print(f" - Scale (X, Y): ({transform['scaleX']}, {transform['scaleY']})")
+        print(f" - Crop (Left, Right, Top, Bottom): ({transform['cropLeft']}, {transform['cropRight']}, {transform['cropTop']}, {transform['cropBottom']})")
 
 except exceptions.ConnectionFailure:
     print("Failed to connect to OBS WebSocket. Check if OBS is open and WebSocket server is enabled.")
