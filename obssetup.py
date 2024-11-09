@@ -13,23 +13,35 @@ password = os.getenv("OBS_PASSWORD")
 # Connect to OBS WebSocket
 ws = obsws(host, port, password)
 
-# Define transforms for 1440p and 1080p monitors
-transform_1440p = {
-    "Rekordbox Capture 1": {"positionX": 0.0, "positionY": 0.0, "rotation": 0.0, "scaleX": 0.5, "scaleY": 0.5, "cropLeft": 0, "cropRight": 0, "cropTop": 0, "cropBottom": 0},
-    "Rekordbox Capture 2": {"positionX": 1280.0, "positionY": 0.0, "rotation": 0.0, "scaleX": 0.5, "scaleY": 0.5, "cropLeft": 0, "cropRight": 0, "cropTop": 0, "cropBottom": 0},
-    "Rekordbox Capture 3": {"positionX": 0.0, "positionY": 720.0, "rotation": 0.0, "scaleX": 0.5, "scaleY": 0.5, "cropLeft": 0, "cropRight": 0, "cropTop": 0, "cropBottom": 0},
-    "Rekordbox Capture 4": {"positionX": 1280.0, "positionY": 720.0, "rotation": 0.0, "scaleX": 0.5, "scaleY": 0.5, "cropLeft": 0, "cropRight": 0, "cropTop": 0, "cropBottom": 0}
-}
-
+# Base transforms for 1080p monitor
 transform_1080p = {
     "Rekordbox Capture 1": {"positionX": 0.0, "positionY": 1080.0, "rotation": 270.0, "scaleX": 1.8, "scaleY": 1.8, "cropLeft": 0, "cropRight": 1315, "cropTop": 195, "cropBottom": 812},
-    "Rekordbox Capture 2": {"positionX": 1920.0, "positionY": 0.0, "rotation": 90.0, "scaleX": 1.8, "scaleY": 1.8, "cropLeft": 1018, "cropRight": 300, "cropTop": 195, "cropBottom": 812},  # Specific transform for Rekordbox Capture 2
+    "Rekordbox Capture 2": {"positionX": 1920.0, "positionY": 0.0, "rotation": 90.0, "scaleX": 1.8, "scaleY": 1.8, "cropLeft": 1018, "cropRight": 300, "cropTop": 195, "cropBottom": 812},
     "Rekordbox Capture 3": {"positionX": 90.0, "positionY": 291.0, "rotation": 0.0, "scaleX": 1.8519, "scaleY": 1.8513, "cropLeft": 907, "cropRight": 959, "cropTop": 193, "cropBottom": 595},
     "Rekordbox Capture 4": {"positionX": 1730.0, "positionY": 291.0, "rotation": 0.0, "scaleX": 1.8519, "scaleY": 1.8513, "cropLeft": 959, "cropRight": 907, "cropTop": 193, "cropBottom": 595}
 }
 
+# Calculated scaling factor for crops
+yadjust = 106
+xadjust = 300
+
+# Calculate 1440p transforms by applying the crop scaling factor
+transform_1440p = {}
+for key, values in transform_1080p.items():
+    transform_1440p[key] = {
+        "positionX": values["positionX"],
+        "positionY": values["positionY"],
+        "rotation": values["rotation"],
+        "scaleX": values["scaleX"],
+        "scaleY": values["scaleY"],
+        "cropLeft": int(values["cropLeft"] + xadjust),
+        "cropRight": int(values["cropRight"] + xadjust),
+        "cropTop": int(values["cropTop"] + yadjust),
+        "cropBottom": int(values["cropBottom"] + yadjust)
+    }
+
 # Set the desired monitor resolution (change between '1440p' and '1080p')
-active_monitor = '1080p'  # or '1440p' depending on which monitor you are using
+active_monitor = '1440p'  # or '1080p' depending on which monitor you are using
 
 # Select the appropriate transform set
 transforms = transform_1440p if active_monitor == '1440p' else transform_1080p
