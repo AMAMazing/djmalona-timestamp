@@ -2,12 +2,14 @@ import os
 from obswebsocket import obsws, requests, exceptions
 from dotenv import load_dotenv
 
+active_monitor = '1440p'
+
 # Load environment variables from .env file
 load_dotenv()
 
 # OBS connection details
 host = "localhost"
-port = "4444"
+port = "4455"
 password = os.getenv("OBS_PASSWORD")
 
 # Connect to OBS WebSocket
@@ -23,7 +25,7 @@ transform_1080p = {
 
 # Calculated scaling factor for crops
 yadjust = 106
-xadjust = 300
+xadjust = 310
 
 # Calculate 1440p transforms by applying the crop scaling factor
 transform_1440p = {}
@@ -39,9 +41,6 @@ for key, values in transform_1080p.items():
         "cropTop": int(values["cropTop"] + yadjust),
         "cropBottom": int(values["cropBottom"] + yadjust)
     }
-
-# Set the desired monitor resolution (change between '1440p' and '1080p')
-active_monitor = '1440p'  # or '1080p' depending on which monitor you are using
 
 # Select the appropriate transform set
 transforms = transform_1440p if active_monitor == '1440p' else transform_1080p
