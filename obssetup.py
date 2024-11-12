@@ -19,7 +19,7 @@ ws = obsws(host, port, password)
 transform_1080p = {
     "Rekordbox Capture 1": {"positionX": 600.0, "positionY": 500.0, "rotation": 0.0, "scaleX": 1.8, "scaleY": 1.8, "cropLeft": 0, "cropRight": 1315, "cropTop": 195, "cropBottom": 812},
     "Rekordbox Capture 2": {"positionX": 600.0, "positionY": 0.0, "rotation": 0.0, "scaleX": 1.8, "scaleY": 1.8, "cropLeft": 1018, "cropRight": 300, "cropTop": 195, "cropBottom": 812},
-    "Rekordbox Capture 3": {"positionX": 300.0, "positionY": 291.0, "rotation": 0.0, "scaleX": 1.8519, "scaleY": 1.85, "cropLeft": 907, "cropRight": 959, "cropTop": 193, "cropBottom": 595},
+    "Rekordbox Capture 3": {"positionX": 300.0, "positionY": 291.0, "rotation": 0.0, "scaleX": 1.8519, "scaleY": 1.85, "cropLeft": 307, "cropRight": 959, "cropTop": 193, "cropBottom": 595},
     "Rekordbox Capture 4": {"positionX": 0.0, "positionY": 291.0, "rotation": 0.0, "scaleX": 1.8519, "scaleY": 1.85, "cropLeft": 959, "cropRight": 907, "cropTop": 193, "cropBottom": 595}
 }
 
